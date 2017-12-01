@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerController2 : MonoBehaviour {
 
+	public int a = 1;
+
 	public static PlayerController2 instance;
 	public Slider sliderBar;
 
