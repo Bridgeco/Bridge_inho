@@ -18,8 +18,8 @@ public class ScoreCalc : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
-		nowScore = PlayerController2.instance.nowScore;
-		topScore = PlayerController2.instance.topScore;
+		nowScore = PlayerController.instance.nowScore;
+		topScore = PlayerController.instance.topScore;
 
 		nowScoreText.text = nowScore.ToString("0000.0"+ "M");
 		topScoreText.text = topScore.ToString ("0000.0" + "M");

@@ -20,12 +20,12 @@ public class CameraMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (this.transform.position.x <= PlayerController2.instance.transform.position.x) {
-			camPos.position = new Vector3 (PlayerController2.instance.transform.position.x, PlayerController2.instance.transform.position.y, transform.position.z);
+		if (this.transform.position.x <= PlayerController.instance.transform.position.x) {
+			camPos.position = new Vector3 (PlayerController.instance.transform.position.x, PlayerController.instance.transform.position.y, transform.position.z);
 		}
-		if (PlayerController2.instance.transform.position.y >= 0) {
-			camPos.position = new Vector3 (transform.position.x, PlayerController2.instance.transform.position.y, transform.position.z);
-		} else if (PlayerController2.instance.transform.position.y <= 0) {
+		if (PlayerController.instance.transform.position.y >= 0) {
+			camPos.position = new Vector3 (transform.position.x, PlayerController.instance.transform.position.y, transform.position.z);
+		} else if (PlayerController.instance.transform.position.y <= 0) {
 			camPos.position = new Vector3 (transform.position.x, 0, transform.position.z);
 		}
 	}

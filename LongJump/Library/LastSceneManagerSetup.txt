@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/1. Scene/Score.unity
+- path: Assets/1. Scene/LongJump.unity
   isLoaded: 1
   isActive: 1

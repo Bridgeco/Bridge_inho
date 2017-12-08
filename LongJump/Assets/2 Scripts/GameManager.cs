@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public enum GameState {
 	menu,
@@ -10,11 +12,11 @@ public enum GameState {
 
 public class GameManager : MonoBehaviour {
 
-
 	public GameState currentGameState = GameState.menu;
 	public static GameManager instance;
+	public static int Count;
 
-	public  Canvas menuCanvas;
+	//public Canvas menuCanvas;
 
 	void Awake(){
 		instance = this;
@@ -26,16 +28,16 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update(){
-		if (Input.GetButtonDown ("s")) {
-			PlayerController2.instance.runningSpeed = 0;
-			PlayerController2.instance.jumpForce = 0;
-			menuCanvas.enabled = true;
-			StartGame ();
-		}
+		
 	}
+
+	public void StartGame(){
+		SceneManager.LoadScene ("LongJump");
+	}
+
 	// Update is called once per frame
-	public void StartGame() {
-		PlayerController2.instance.StartGame ();
+	/*public void StartGame() {
+		PlayerController.instance.StartGame ();
 		SetGameState (GameState.inGame);
 	}
 
@@ -58,7 +60,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 		currentGameState = newGameState;
-	}
+	}*/
 
 
 

@@ -1,85 +1,151 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
 	public static PlayerController instance;
+	// Slider 값 변수
+	public Slider sliderBar;
+	//타이머 UI Text
+	public Text counterText;
+	//타이머 변수형태 변환을 위한 변수
+	public float seconds;
 
 	public float jumpForce = 0.0f;
-	public float runningSpeed = 0.0f;
+	public float runningSpeed = 20.0f;
 	public Animator animator;
 
+
 	private Rigidbody2D rigidBody;
+	//출발 지점 값(이동거리 계산), 
 	private Vector3 startingPosition;
+	//도착 지점 값(이동거리 계산)
+	private Vector3 target;
 
+	// 타이머 변수
 	private float timer;
+	// 점프 여부 판단
+	private bool isJump = false;
 
+	//현재 스코어
+	public float nowScore;
+	public float topScore;
+
+	public GameObject scoreTable;
+	public GameObject playTable;
 
 	void Awake(){
 		rigidBody = GetComponent<Rigidbody2D> ();
+		//counterText = GetComponent<Text>() as Text;
 		instance = this;
 		startingPosition = this.transform.position;
-
+		jumpForce = 10.0f;
+		runningSpeed = 20.0f;
 		//터치 시간 10초 설정
-		timer = 10.0f;
-	}
+		timer = 3.0f;
 
+	}
+	void Start(){
+		topScore = ScoreCalc.topScore;
+		scoreTable.SetActive (false);
+		playTable.SetActive (true);
+	}
 	public void StartGame(){
 		animator.SetBool ("isAlive", true);
 		this.transform.position = startingPosition;
 	}
-
 	// Update is called once per frame
 	void Update () {
-		if (GameManager.instance.currentGameState == GameState.inGame) {
-			if (Input.GetMouseButtonDown (0)) {
-				Jump ();
-			}
+		
+		sliderBar.value = runningSpeed;
+		seconds = (int)timer+1;
+		counterText.text = seconds.ToString("00");
+
+		if(timer < 0.4f && timer > 0.0f){
+			animator.SetBool("isReady", true);
 		}
-		if (timer > 0) {
+		if (timer >= 0) {
+			Minor ();
 			timer -= Time.deltaTime;
-		} else {
+		} else if (timer < 0 && isJump == false) {
+			playTable.SetActive (false);
+			//GameManager.instance.menuCanvas.enabled = false;
+			animator.SetBool ("isJump", true);
 			rigidBody.AddForce (Vector2.up * jumpForce, ForceMode2D.Impulse);
-			FixedUpdate ();
-			jumpForce = 0.0f;
-			runningSpeed = 0.0f;
+			rigidBody.AddForce (Vector2.right * runningSpeed, ForceMode2D.Impulse);
+			isJump = true;
+
+
+			//rigidBody.velocity = new Vector2 (runningSpeed, rigidBody.velocity.y);
 		}
-		animator.SetBool ("isGrounded", IsGrounded ());
+		if (IsGrounded()) {
+			animator.SetBool ("isGround", true);
+			Destroy (rigidBody);
+			//runningSpeed = 0.0f;
+			target = this.transform.position;
+			this.transform.position = target;
+			Score ();
+			StartCoroutine (Wait ());
+		}
+
+
 	}
 
-	public void FixedUpdate(){
-		if (GameManager.instance.currentGameState == GameState.inGame) {
-			if (timer < 0){
-				if (rigidBody.velocity.x < runningSpeed) {
-					rigidBody.velocity = new Vector2 (runningSpeed, rigidBody.velocity.y);
-				}
-			}
+	// 터치 시 점프 힘 추가
+	public void Jump(){
+
+		jumpForce += 0.3f;
+		runningSpeed += 0.6f;
+	}
+
+	// 게이지 구간 별 줄어듦
+	public void Minor(){
+		
+		if (runningSpeed > 20.0f && runningSpeed < 40.0f) {
+			runningSpeed -= 0.01f;
+
+		} else if (runningSpeed > 40.0f && runningSpeed < 70.0f) {
+			runningSpeed -= 0.03f;
+
+		} else if (runningSpeed > 70.0f && runningSpeed < 80.0f) {
+			runningSpeed -= 0.05f;
+
+		} else if (runningSpeed > 80.0f) {
+			runningSpeed = 80.0f;
 		}
 	}
 
-	void Jump(){
-		if (IsGrounded ()) {
-			jumpForce += 0.5f;
-			runningSpeed += 1.0f;
-			//rigidBody.AddForce (Vector2.up * jumpForce, ForceMode2D.Impulse);
+	//이동한 거리만큼 계산
+	public void Score(){
+		nowScore = (target.x - startingPosition.x)/2;
+		if(UIManager.topScore < nowScore){
+			UIManager.topScore = nowScore;
 		}
 	}
+
+	//Ground 판별을 위한 layer값 저장 변수
 	public LayerMask groundLayer;
 
+
+	// 캐릭터 기준 아래 땅 판별 True or False
 	bool IsGrounded(){
-		
-		if(Physics2D.Raycast(this.transform.position, Vector2.down, 0.2f, groundLayer.value)){
+
+		if(Physics2D.Raycast(this.transform.position, Vector2.down, 2.5f, groundLayer.value)){
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-	public void Kill(){
-		Debug.Log ("kill");
-		GameManager.instance.GameOver ();
-		animator.SetBool ("isAlive", false);
+	// 착지후 기다림 및 기록 측정
+	IEnumerator Wait(){
+		GameManager.Count += 1; 
+		yield return new WaitForSeconds(2);
+		scoreTable.SetActive (true);
+
 
 	}
 

@@ -53,14 +53,13 @@
   <ItemGroup>
      <Compile Include="Assets\2 Scripts\CameraMove.cs" />
      <Compile Include="Assets\2 Scripts\GameManager.cs" />
-     <Compile Include="Assets\2 Scripts\KillTrigger.cs" />
      <Compile Include="Assets\2 Scripts\LeaveTrigger.cs" />
      <Compile Include="Assets\2 Scripts\LevelGenerator.cs" />
      <Compile Include="Assets\2 Scripts\LevelPiece.cs" />
      <Compile Include="Assets\2 Scripts\PlayerController.cs" />
-     <Compile Include="Assets\2 Scripts\PlayerController2.cs" />
      <Compile Include="Assets\2 Scripts\ScoreCalc.cs" />
      <Compile Include="Assets\2 Scripts\SliderBar.cs" />
+     <Compile Include="Assets\2 Scripts\UIManager.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
