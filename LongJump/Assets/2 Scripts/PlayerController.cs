@@ -14,11 +14,14 @@ public class PlayerController : MonoBehaviour {
 	//타이머 변수형태 변환을 위한 변수
 	public float seconds;
 
+	//점프하는 힘
 	public float jumpForce = 0.0f;
+	//뛰는 힘
 	public float runningSpeed = 20.0f;
+	//애니메이션 매개
 	public Animator animator;
 
-
+	//RigidBody2D 매개
 	private Rigidbody2D rigidBody;
 	//출발 지점 값(이동거리 계산), 
 	private Vector3 startingPosition;
@@ -26,16 +29,20 @@ public class PlayerController : MonoBehaviour {
 	private Vector3 target;
 
 	// 타이머 변수
-	private float timer;
+	public float timer;
 	// 점프 여부 판단
 	private bool isJump = false;
 
 	//현재 스코어
 	public float nowScore;
 	public float topScore;
-
 	public GameObject scoreTable;
 	public GameObject playTable;
+	public GameObject startTable;
+
+	private Vector3 nowPos;
+	private Vector3 prePos;
+	private float down;
 
 	void Awake(){
 		rigidBody = GetComponent<Rigidbody2D> ();
@@ -45,31 +52,37 @@ public class PlayerController : MonoBehaviour {
 		jumpForce = 10.0f;
 		runningSpeed = 20.0f;
 		//터치 시간 10초 설정
-		timer = 3.0f;
+		timer = 33.2f;
 
 	}
 	void Start(){
 		topScore = ScoreCalc.topScore;
 		scoreTable.SetActive (false);
-		playTable.SetActive (true);
+		playTable.SetActive (false);
+		startTable.SetActive (true);
+		prePos = new Vector3 (transform.position.x, transform.position.y, transform.position.z);
+
 	}
-	public void StartGame(){
+	/*public void StartGame(){
 		animator.SetBool ("isAlive", true);
 		this.transform.position = startingPosition;
-	}
+	}*/
 	// Update is called once per frame
 	void Update () {
-		
 		sliderBar.value = runningSpeed;
 		seconds = (int)timer+1;
 		counterText.text = seconds.ToString("00");
+		Minor ();
+		timer -= Time.deltaTime;
 
 		if(timer < 0.4f && timer > 0.0f){
 			animator.SetBool("isReady", true);
 		}
-		if (timer >= 0) {
-			Minor ();
-			timer -= Time.deltaTime;
+		if (timer >= 0 && timer <= 30) {
+			
+			startTable.SetActive (false);
+			playTable.SetActive (true);
+
 		} else if (timer < 0 && isJump == false) {
 			playTable.SetActive (false);
 			//GameManager.instance.menuCanvas.enabled = false;
@@ -78,9 +91,9 @@ public class PlayerController : MonoBehaviour {
 			rigidBody.AddForce (Vector2.right * runningSpeed, ForceMode2D.Impulse);
 			isJump = true;
 
-
 			//rigidBody.velocity = new Vector2 (runningSpeed, rigidBody.velocity.y);
 		}
+
 		if (IsGrounded()) {
 			animator.SetBool ("isGround", true);
 			Destroy (rigidBody);
@@ -93,10 +106,23 @@ public class PlayerController : MonoBehaviour {
 
 
 	}
+	void LateUpdate(){
+		animator.SetBool ("isTouch", false);
+		nowPos = new Vector3 (transform.position.x, transform.position.y, transform.position.z);
+		down = nowPos.y - prePos.y;
+		if (down < 0) {
+			if (Physics2D.Raycast (this.transform.position, Vector2.down, 5.0f, groundLayer.value)) {
+				animator.SetBool ("isDown", true);
+			}
+
+		}
+		prePos = nowPos;
+
+	}
 
 	// 터치 시 점프 힘 추가
 	public void Jump(){
-
+		animator.SetBool ("isTouch", true);
 		jumpForce += 0.3f;
 		runningSpeed += 0.6f;
 	}
@@ -120,7 +146,7 @@ public class PlayerController : MonoBehaviour {
 
 	//이동한 거리만큼 계산
 	public void Score(){
-		nowScore = (target.x - startingPosition.x)/2;
+		nowScore = (target.x - startingPosition.x)/3;
 		if(UIManager.topScore < nowScore){
 			UIManager.topScore = nowScore;
 		}

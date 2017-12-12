@@ -29,5 +29,7 @@ public class UIManager : MonoBehaviour {
 
 		nowScoreText.text = nowScore.ToString("0000.0"+ "M");
 		topScoreText.text = topScore.ToString ("0000.0" + "M");
+
+
 	}
 }
