@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour {
 	private bool isJump = false;
 
 	//현재 스코어
-	public float nowScore;
+	public float nowScore = 0;
 	public float topScore;
 	public GameObject scoreTable;
 	public GameObject playTable;
